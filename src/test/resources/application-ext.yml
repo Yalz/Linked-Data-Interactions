@@ -1,0 +1,10 @@
+componentPaths:
+  - "ext.components.lib"
+
+orchestrator:
+  pipelines:
+    - name: testPipeline
+      input:
+        name: Test:In
+      outputs:
+        - name: Ext:Out

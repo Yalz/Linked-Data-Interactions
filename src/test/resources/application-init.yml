@@ -1,0 +1,19 @@
+orchestrator:
+  pipelines:
+    - name: testPipeline
+      input:
+        name: Test:In
+        config:
+          key: val
+        adapter:
+          name: Test:Adapt
+          config:
+            mapping: "mapping.ttl"
+      transformers:
+        - name: Test:Transform
+          config:
+            bool: "true"
+      outputs:
+        - name: Test:Out
+          config:
+            content-type: text/turtle

@@ -1,0 +1,20 @@
+#Wed Aug 06 13:42:31 UTC 2025
+micronaut:
+  application:
+    name: mn-etl
+redis:
+  uri: redis://localhost:6379
+
+orchestrator:
+  name: "abc"
+  pipelines:
+    - name: data
+      input:
+        name: Ldio:HttpIn
+        config:
+          url: https://www.cheapshark.com/api/1.0/deals?pageSize=1000
+          interval: PT30M
+      outputs:
+        - name: Ldio:ConsoleOut
+          config:
+            content-type: text/turtle

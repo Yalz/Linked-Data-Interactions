@@ -26,7 +26,7 @@ class PipelineInitTest {
         assertEquals("testPipeline", pipeline.getName());
 
         var expectedInput = new InputConfig("Test:In", Map.of("key", "val"),
-                new EtlComponentConfig("Test:Adapter", Map.of("mapping", "mapping.ttl")));
+                new EtlComponentConfig("Test:Adapt", Map.of("mapping", "mapping.ttl")));
 
         var expectedTransform = new EtlComponentConfig("Test:Transform", Map.of("bool", "true"));
         var expectedOutput = new EtlComponentConfig("Test:Out", Map.of("content-type", "text/turtle"));

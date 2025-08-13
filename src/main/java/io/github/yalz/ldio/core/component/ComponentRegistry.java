@@ -20,9 +20,14 @@ public class ComponentRegistry {
     private final Map<String, Class<? extends EtlTransformer>> transformerComponents = new HashMap<>();
     private final Map<String, Class<? extends EtlOutput>> outputComponents = new HashMap<>();
 
-    public ComponentRegistry(@Value("${componentPaths:[]}") List<String> componentPaths) {
+    public ComponentRegistry(@Value("${componentPaths:}") List<String> componentPaths) {
         initComponentsForPath("io.github.yalz.ldio");
-        componentPaths.forEach(this::initComponentsForPath);
+
+        if (!componentPaths.equals(List.of(""))) {
+            componentPaths.stream()
+                    .filter(path -> path != null && !path.isBlank())
+                    .forEach(this::initComponentsForPath);
+        }
     }
 
     public void initComponentsForPath(String componentPath) {

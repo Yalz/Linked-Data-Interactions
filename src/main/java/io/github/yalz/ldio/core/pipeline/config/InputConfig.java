@@ -9,7 +9,7 @@ import java.util.Objects;
 public class InputConfig extends EtlComponentConfig {
     private EtlComponentConfig adapter;
 
-    public InputConfig(String name, Map<String, String> config, EtlComponentConfig adapter) {
+    public InputConfig(String name, Map<String, Object> config, EtlComponentConfig adapter) {
         super(name, config);
         this.adapter = adapter;
     }

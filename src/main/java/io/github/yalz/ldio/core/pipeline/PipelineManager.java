@@ -1,8 +1,8 @@
 package io.github.yalz.ldio.core.pipeline;
 
 import io.github.yalz.ldio.core.OrchestratorConfig;
-import io.github.yalz.ldio.core.component.ComponentName.ComponentType;
-import io.github.yalz.ldio.core.component.ComponentRegistry;
+import io.github.yalz.ldio.core.pipeline.component.ComponentName.ComponentType;
+import io.github.yalz.ldio.core.pipeline.component.ComponentRegistry;
 import io.github.yalz.ldio.core.pipeline.component.EtlComponent;
 import io.github.yalz.ldio.core.pipeline.component.adapter.EtlAdapter;
 import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
@@ -10,26 +10,33 @@ import io.github.yalz.ldio.core.pipeline.config.PipelineConfig;
 import io.github.yalz.ldio.core.pipeline.component.input.EtlInput;
 import io.github.yalz.ldio.core.pipeline.component.output.EtlOutput;
 import io.github.yalz.ldio.core.pipeline.component.transformer.EtlTransformer;
+import io.lettuce.core.RedisClient;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
+import io.micronaut.scheduling.annotation.Async;
 import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static io.github.yalz.ldio.core.component.ComponentName.ComponentType.*;
+import static io.github.yalz.ldio.core.pipeline.component.ComponentName.ComponentType.*;
 
 @Context
 public class PipelineManager {
 
     private final BeanContext beanContext;
     private final ComponentRegistry componentRegistry;
-
     private final ApplicationEventPublisher<PipelineCreatedEvent> pipelineEventPublisher;
 
+    @Inject
+    OrchestratorConfig orchestratorConfig;
+    @Inject
+    RedisClient redisClient;
     // Track active pipelines by name
     private final Map<String, EtlPipeline> pipelines = new ConcurrentHashMap<>();
 
@@ -39,9 +46,9 @@ public class PipelineManager {
         this.pipelineEventPublisher = pipelineEventPublisher;
     }
 
-    @PostConstruct
-    void initPipelines(OrchestratorConfig config) {
-        config.getPipelines().forEach(this::createPipeline);
+    @EventListener
+    public void onStartup(ApplicationStartupEvent event) {
+        orchestratorConfig.getPipelines().forEach(this::createPipeline);
     }
 
     public void createPipeline(PipelineConfig pipelineConfig) {
@@ -50,7 +57,7 @@ public class PipelineManager {
         }
 
         var input = (EtlInput) getComponent(pipelineConfig.getName(), pipelineConfig.getInput(), INPUT);
-
+        input.initRedis(redisClient);
         beanContext.inject(input);
 
         var adapter = Optional.ofNullable(pipelineConfig.getInput().getAdapter())
@@ -75,6 +82,7 @@ public class PipelineManager {
                 .toList();
 
         EtlPipeline pipeline = new EtlPipeline(pipelineConfig.getName(), input, transformers, outputs);
+        beanContext.inject(pipeline);
 
         pipeline.init();
 

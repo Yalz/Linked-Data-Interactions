@@ -1,8 +1,9 @@
 package io.github.yalz.ldio.core.pipeline.test_components;
 
-import io.github.yalz.ldio.core.component.ComponentName;
+import io.github.yalz.ldio.core.pipeline.component.ComponentName;
 import io.github.yalz.ldio.core.pipeline.component.output.EtlOutput;
 import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
+import org.apache.jena.rdf.model.Model;
 
 @ComponentName(value = "Test:Out", type = ComponentName.ComponentType.OUTPUT)
 public class TestOut extends EtlOutput {
@@ -11,7 +12,7 @@ public class TestOut extends EtlOutput {
     }
 
     @Override
-    public void handle(String data) {
+    public void handle(Model data) {
 
     }
 }

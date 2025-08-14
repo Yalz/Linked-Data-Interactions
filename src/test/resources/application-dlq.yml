@@ -1,0 +1,12 @@
+redis:
+  uri: ${redis.uri}
+
+orchestrator:
+  pipelines:
+    - name: testPipeline
+      input:
+        name: Test:In
+      transformers:
+        - name: Test:Breaking
+      outputs:
+        - name: Test:Out

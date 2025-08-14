@@ -8,6 +8,7 @@ import io.micronaut.context.LifeCycle;
 import io.micronaut.context.annotation.Prototype;
 import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Inject;
+import org.apache.jena.rdf.model.Model;
 
 import java.util.List;
 
@@ -43,13 +44,13 @@ public class EtlPipeline implements LifeCycle<EtlPipeline> {
         return LifeCycle.super.start();
     }
 
-    private String transform(String input) {
-        String transformedData = input;
+    private Model transform(Model input) {
+        Model transformedData = input;
         for (EtlTransformer transformer: transformers) {
             try {
                 transformedData = transformer.transform(transformedData);
             } catch (Exception e) {
-                dlqProducer.sendToPipeline(id, transformer.getClass().getCanonicalName(), transformedData);
+                dlqProducer.sendToPipeline(id, transformer.getClass().getCanonicalName(), transformedData, e);
                 throw new RuntimeException(e);
             }
 
@@ -57,7 +58,7 @@ public class EtlPipeline implements LifeCycle<EtlPipeline> {
         return transformedData;
     }
 
-    private void output(String input) {
+    private void output(Model input) {
         outputs.forEach(etlOutput -> etlOutput.handle(input));
     }
 
@@ -77,5 +78,9 @@ public class EtlPipeline implements LifeCycle<EtlPipeline> {
 
     public void cleanup() {
 
+    }
+
+    public EtlInput getInput() {
+        return input;
     }
 }

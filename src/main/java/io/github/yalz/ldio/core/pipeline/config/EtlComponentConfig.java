@@ -2,6 +2,7 @@ package io.github.yalz.ldio.core.pipeline.config;
 
 import io.micronaut.serde.annotation.Serdeable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -11,9 +12,9 @@ public class EtlComponentConfig {
     private final String name;
     private final Map<String, String> config;
 
-    public EtlComponentConfig(String name, Map<String, String> config) {
+    public EtlComponentConfig(String name, Map<String, Object> config) {
         this.name = name;
-        this.config = normalizeKeys(config != null ? config : Map.of());;
+        this.config = normalizeKeys(flatten(config != null ? config : Map.of()));
     }
 
     public String getName() {
@@ -32,8 +33,26 @@ public class EtlComponentConfig {
                                 .replace("-", "")
                                 .replace("_", ""),
                         Map.Entry::getValue,
-                        (existing, replacement) -> replacement
+                        (_, replacement) -> replacement
                 ));
+    }
+
+    private static Map<String, String> flatten(Map<String, ?> input) {
+        Map<String, String> result = new HashMap<>();
+        flattenRecursive("", input, result);
+        return result;
+    }
+
+    private static void flattenRecursive(String prefix, Map<String, ?> map, Map<String, String> result) {
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            String key = prefix.isEmpty() ? entry.getKey() : prefix + "." + entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                flattenRecursive(key, (Map<String, ?>) value, result);
+            } else {
+                result.put(key, String.valueOf(value));
+            }
+        }
     }
 
     @Override

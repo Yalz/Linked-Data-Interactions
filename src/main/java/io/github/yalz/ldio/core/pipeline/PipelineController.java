@@ -1,20 +1,17 @@
 package io.github.yalz.ldio.core.pipeline;
 
-import io.github.yalz.ldio.core.OrchestratorConfig;
-import io.github.yalz.ldio.core.component.ComponentRegistry;
+import io.github.yalz.ldio.core.pipeline.component.ComponentRegistry;
 import io.github.yalz.ldio.core.pipeline.config.PipelineConfig;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class PipelineController {
     private final PipelineManager pipelineManager;
-
-    @Inject
-    OrchestratorConfig config;
 
     @Inject
     ComponentRegistry componentRegistry;
@@ -24,8 +21,9 @@ public class PipelineController {
     }
 
     @Get("/config")
-    String config() {
-        return componentRegistry.getCatalog().toString();
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, List<Map<String, Object>>> config() {
+        return componentRegistry.getCatalog();
     }
 
     @Post

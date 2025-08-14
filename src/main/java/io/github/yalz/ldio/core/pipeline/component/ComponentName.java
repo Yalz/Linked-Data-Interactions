@@ -1,4 +1,4 @@
-package io.github.yalz.ldio.core.component;
+package io.github.yalz.ldio.core.pipeline.component;
 
 import java.lang.annotation.*;
 

@@ -3,18 +3,18 @@ micronaut:
   application:
     name: mn-etl
 redis:
-  uri: redis://localhost:6379
+  uri: redis://default:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@localhost:6379
+
 
 orchestrator:
-  name: "abc"
   pipelines:
     - name: data
       input:
         name: Ldio:HttpIn
-        config:
-          url: https://www.cheapshark.com/api/1.0/deals?pageSize=1000
-          interval: PT30M
+      transformers:
+        - name: Ldio:Breaking
       outputs:
         - name: Ldio:ConsoleOut
           config:
-            content-type: text/turtle
+            rdf-writer:
+              content-type: application/ld+json

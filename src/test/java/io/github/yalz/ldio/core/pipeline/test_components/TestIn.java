@@ -1,6 +1,6 @@
 package io.github.yalz.ldio.core.pipeline.test_components;
 
-import io.github.yalz.ldio.core.component.ComponentName;
+import io.github.yalz.ldio.core.pipeline.component.ComponentName;
 import io.github.yalz.ldio.core.pipeline.component.input.EtlInput;
 import io.github.yalz.ldio.core.pipeline.config.InputConfig;
 

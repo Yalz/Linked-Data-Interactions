@@ -66,14 +66,19 @@ tasks.test {
 }
 
 var githubOrg = "Yalz"
+
 docker {
     registryCredentials {
         url.set("ghcr.io")
         username.set(githubOrg)
-        password.set(System.getenv("PERSONAL_ACCESS_TOKEN"))
+        password.set(System.getenv("GITHUB_PERSONAL_ACCESS_TOKEN"))
     }
 }
 
 tasks.named("dockerBuild") {
-    images = ["ghcr.io/${githubOrg}/${rootProject.name}"]
+    images.set(["ghcr.io/${githubOrg}/${rootProject.name}"])
+}
+
+tasks.named("dockerPush") {
+    images.set(["ghcr.io/${githubOrg}/${rootProject.name}"])
 }

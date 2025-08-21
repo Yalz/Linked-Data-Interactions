@@ -1,25 +1,29 @@
-name: Build & Docker Push
+name: Build and Push Docker Image
 
 on:
   push:
     branches: [ master ]
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1.3.5
-        with:
-          java-version: '24'
-          distribution: 'graalvm'
-          native-image: true
 
-      # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
-      # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-      - name: Build image
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_USERNAME: Yalz
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Grant execute permission for Gradle
+        run: chmod +x gradlew
+
+      - name: Build and Push Docker Image
         run: ./gradlew dockerPush

@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew dockerfile
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/yalz/ldio:latest -f build/docker/main/Dockerfile .
+        run: docker build -t ghcr.io/yalz/ldio:latest -f ldio-core/build/docker/main/Dockerfile .
 
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u Yalz --password-stdin

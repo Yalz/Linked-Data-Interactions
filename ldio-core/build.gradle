@@ -1,0 +1,72 @@
+plugins {
+    id("io.micronaut.application") version "4.5.4"
+    id("com.gradleup.shadow") version "8.3.7"
+    id("io.micronaut.aot") version "4.5.4"
+}
+
+group = "io.github.yalz.ldio"
+version = "0.1"
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass = "io.github.yalz.ldio.Application"
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("24")
+    targetCompatibility = JavaVersion.toVersion("24")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+dependencies {
+
+    runtimeOnly("org.yaml:snakeyaml")
+
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.micronaut.redis:micronaut-redis-lettuce")
+    implementation("io.micronaut:micronaut-http-server-netty")
+
+    testImplementation "com.redis:testcontainers-redis:2.2.2"
+    testImplementation "org.testcontainers:testcontainers:1.21.3"
+    testImplementation "org.testcontainers:junit-jupiter"
+
+    testImplementation "io.micronaut.test:micronaut-test-junit5"
+    testImplementation 'org.awaitility:awaitility:4.2.0'
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation("org.mockito:mockito-junit-jupiter:5.19.0")
+
+
+    implementation 'org.reflections:reflections:0.10.2'
+
+    implementation("org.apache.jena:jena-arq:5.5.0")
+
+    implementation("io.projectreactor:reactor-core")
+
+    compileOnly("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-http-client")
+
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+graalvmNative.toolchainDetection = false
+
+tasks.named("dockerfileNative") {
+    jdkVersion = "24"
+}

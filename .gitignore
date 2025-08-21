@@ -13,3 +13,5 @@ target/
 .settings
 .classpath
 .factorypath
+
+application.yml

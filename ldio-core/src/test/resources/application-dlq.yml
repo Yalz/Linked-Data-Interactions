@@ -1,0 +1,19 @@
+redis:
+  uri: ${redis.uri}
+
+orchestrator:
+  pipelines:
+    - name: brokenTransform
+      input:
+        name: Test:In
+      transformers:
+        - name: Test:Breaking
+      outputs:
+        - name: Test:Out
+    - name: brokenAdapt
+      input:
+        name: Test:In
+        adapter:
+          name: Test:BreakingAdapt
+      outputs:
+        - name: Test:Out

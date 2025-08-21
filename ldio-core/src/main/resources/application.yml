@@ -1,0 +1,22 @@
+#Wed Aug 06 13:42:31 UTC 2025
+micronaut:
+  application:
+    name: mn-etl
+redis:
+  uri: redis://default:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@localhost:6379
+
+
+orchestrator:
+  pipelines:
+    - name: data
+      input:
+        name: Ldio:HttpIn
+        adapter:
+          name: Test:BrokenAdapt
+      transformers:
+        - name: Ldio:Breaking
+      outputs:
+        - name: Ldio:ConsoleOut
+          config:
+            rdf-writer:
+              content-type: application/ld+json

@@ -22,13 +22,4 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
       - name: Build native image
-        run: ./gradlew nativeCompile dockerfileNative
-
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build Docker image
-        run: docker build -t ghcr.io/yalz/ldio:latest -f build/docker/native/Dockerfile .
-
-      - name: Push Docker image
-        run: docker push ghcr.io/yalz/ldio:latest
+        run: ./gradlew dockerPush

@@ -65,8 +65,15 @@ tasks.test {
     useJUnitPlatform()
 }
 
-graalvmNative.toolchainDetection = false
+var githubOrg = "yalz"
+docker {
+    registryCredentials {
+        url.set("ghcr.io")
+        username.set(githubOrg)
+        password.set(System.getenv("PERSONAL_ACCESS_TOKEN"))
+    }
+}
 
-tasks.named("dockerfileNative") {
-    jdkVersion = "24"
+tasks.named("dockerBuild") {
+    images = ["ghcr.io/${githubOrg}/${rootProject.name}"]
 }

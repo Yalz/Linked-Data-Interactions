@@ -1,0 +1,28 @@
+name: Native Build & Docker Push
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '24'
+
+      - name: Build native image
+        run: ./gradlew nativeCompile dockerfileNative
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t ghcr.io/${{ github.repository }}/ldio:latest -f build/docker/native/Dockerfile .
+
+      - name: Push Docker image
+        run: docker push ghcr.io/${{ github.repository }}/ldio:latest

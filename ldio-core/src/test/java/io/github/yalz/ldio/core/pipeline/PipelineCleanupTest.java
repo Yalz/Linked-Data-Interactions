@@ -8,14 +8,36 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.runtime.event.ApplicationShutdownEvent;
 import io.micronaut.runtime.server.EmbeddedServer;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.micronaut.test.support.TestPropertyProvider;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.EnabledIfDockerAvailable;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @MicronautTest(environments = "init")
-public class PipelineCleanupTest {
+@Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@EnabledIfDockerAvailable
+public class PipelineCleanupTest implements TestPropertyProvider {
+    @Container
+    static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.2"))
+            .withExposedPorts(6379);
+
+    @Override
+    public Map<String, String> getProperties() {
+        redis.start(); // Start container before Micronaut context
+        String uri = "redis://" + redis.getHost() + ":" + redis.getMappedPort(6379);
+        return Map.of("redis.uri", uri); // Inject into Micronaut config
+    }
 
     @Inject
     PipelineManager manager;

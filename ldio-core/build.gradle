@@ -65,7 +65,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
-var githubOrg = "yalz"
+var githubOrg = "Yalz"
 docker {
     registryCredentials {
         url.set("ghcr.io")

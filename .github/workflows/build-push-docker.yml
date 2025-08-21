@@ -24,6 +24,9 @@ jobs:
       - name: Generate Dockerfile
         run: ./gradlew dockerfile
 
+      - name: Prepare Docker layers
+        run: ./gradlew :ldio-core:dockerPrepare
+
       - name: Build Docker image
         run: docker build -t ghcr.io/yalz/ldio:latest -f ldio-core/build/docker/main/Dockerfile ldio-core/
 

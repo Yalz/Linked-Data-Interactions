@@ -24,7 +24,7 @@ sourceSets {
     main {
         resources {
             srcDirs = ['src/main/resources']
-            exclude 'application.yml'
+//            exclude 'application.yml'
         }
     }
 }

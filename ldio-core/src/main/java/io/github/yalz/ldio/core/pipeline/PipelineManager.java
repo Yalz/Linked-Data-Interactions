@@ -110,7 +110,9 @@ public class PipelineManager {
 
     @EventListener
     public void onStartup(ApplicationStartupEvent event) {
-        orchestratorConfig.getPipelines().forEach(this::createPipeline);
+        if (orchestratorConfig.getPipelines() != null) {
+            orchestratorConfig.getPipelines().forEach(this::createPipeline);
+        }
     }
 
     @EventListener

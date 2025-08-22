@@ -24,6 +24,7 @@ sourceSets {
     main {
         resources {
             srcDirs = ['src/main/resources']
+            exclude 'application.yml'
         }
     }
 }
@@ -81,4 +82,8 @@ tasks.named("dockerBuild") {
 
 tasks.named("dockerPush") {
     images.set(["ghcr.io/${githubOrg}/${rootProject.name}"])
+}
+
+tasks.named("dockerfile") {
+    baseImage.set("eclipse-temurin:24-jre-alpine")
 }

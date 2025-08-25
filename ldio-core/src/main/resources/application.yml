@@ -1,6 +1,0 @@
-#Wed Aug 06 13:42:31 UTC 2025
-micronaut:
-  application:
-    name: mn-etl
-redis:
-  uri: redis://default:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@localhost:6379

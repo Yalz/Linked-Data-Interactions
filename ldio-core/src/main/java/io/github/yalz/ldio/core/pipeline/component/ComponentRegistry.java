@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 
 @Context
 public class ComponentRegistry {
-    private final Map<String, Class<?>> inputComponents = new HashMap<String, Class<?>>();
-    private final Map<String, Class<?>> adapterComponents = new HashMap<String, Class<?>>();
-    private final Map<String, Class<?>> transformerComponents = new HashMap<String, Class<?>>();
-    private final Map<String, Class<?>> outputComponents = new HashMap<String, Class<?>>();
+    private final Map<String, ComponentInfo> inputComponents = new HashMap<String, ComponentInfo>();
+    private final Map<String, ComponentInfo> adapterComponents = new HashMap<String, ComponentInfo>();
+    private final Map<String, ComponentInfo> transformerComponents = new HashMap<String, ComponentInfo>();
+    private final Map<String, ComponentInfo> outputComponents = new HashMap<String, ComponentInfo>();
 
     public ComponentRegistry(@Value("${componentPaths:}") List<String> componentPaths) {
         initComponentsForPath("io.github.yalz.ldio");
@@ -34,15 +34,15 @@ public class ComponentRegistry {
         for (Class<?> clazz : annotated) {
             ComponentName annotation = clazz.getAnnotation(ComponentName.class);
             switch (annotation.type()) {
-                case INPUT -> inputComponents.put(annotation.value(), clazz);
-                case ADAPTER -> adapterComponents.put(annotation.value(), clazz);
-                case TRANSFORMER -> transformerComponents.put(annotation.value(), clazz);
-                case OUTPUT -> outputComponents.put(annotation.value(), clazz);
+                case INPUT -> inputComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+                case ADAPTER -> adapterComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+                case TRANSFORMER -> transformerComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+                case OUTPUT -> outputComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
             }
         }
     }
 
-    public Class<?> getComponentClass(EtlComponentConfig componentConfig, ComponentName.ComponentType type) {
+    public ComponentInfo getComponentClass(EtlComponentConfig componentConfig, ComponentName.ComponentType type) {
         var componentClass = switch (type) {
             case INPUT -> inputComponents.get(componentConfig.getName());
             case ADAPTER -> adapterComponents.get(componentConfig.getName());
@@ -67,13 +67,14 @@ public class ComponentRegistry {
         return groupedCatalog;
     }
 
-    private List<Map<String, Object>> buildCatalogEntries(Map<String, Class<?>> componentMap) {
+    private List<Map<String, Object>> buildCatalogEntries(Map<String, ComponentInfo> componentMap) {
         return componentMap.entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> catalogEntry = new HashMap<>();
-                    Class<?> componentClass = entry.getValue();
+                    Class<?> componentClass = entry.getValue().componentClass();
 
                     catalogEntry.put("name", entry.getKey());
+                    catalogEntry.put("description", entry.getValue().description());
                     catalogEntry.put("class", componentClass.getName());
 
                     var properties = extractComponentProperties(componentClass);

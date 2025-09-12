@@ -7,6 +7,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface ComponentName {
     String value();
+    String description() default "";
     ComponentType type();
 
     enum ComponentType {

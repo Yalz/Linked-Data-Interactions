@@ -98,6 +98,7 @@ public class PipelineManager {
     private EtlComponent getComponent(String pipelineName, EtlComponentConfig componentConfig, ComponentType componentType) {
         try {
             var etlComponent = componentRegistry.getComponentClass(componentConfig, componentType)
+                    .componentClass()
                     .getConstructor(String.class, componentConfig.getClass())
                     .newInstance(pipelineName, componentConfig);
             beanContext.inject(etlComponent);

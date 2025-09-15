@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class PipelineController {
@@ -30,5 +31,11 @@ public class PipelineController {
     String createPipeline(@Body PipelineConfig pipelineConfig) {
         pipelineManager.createPipeline(pipelineConfig);
         return pipelineConfig.getName();
+    }
+
+    @Get
+    @Produces(MediaType.APPLICATION_JSON)
+    Set<String> getActivePipelines() {
+        return pipelineManager.getPipelines().keySet();
     }
 }

@@ -11,35 +11,18 @@ import java.util.stream.Collectors;
 
 @Context
 public class ComponentRegistry {
+    private final List<String> componentPaths = new ArrayList<>();
+
     private final Map<String, ComponentInfo> inputComponents = new HashMap<String, ComponentInfo>();
     private final Map<String, ComponentInfo> adapterComponents = new HashMap<String, ComponentInfo>();
     private final Map<String, ComponentInfo> transformerComponents = new HashMap<String, ComponentInfo>();
     private final Map<String, ComponentInfo> outputComponents = new HashMap<String, ComponentInfo>();
 
     public ComponentRegistry(@Value("${componentPaths:}") List<String> componentPaths) {
-        initComponentsForPath("io.github.yalz.ldio");
-
-        if (!componentPaths.equals(List.of(""))) {
-            componentPaths.stream()
-                    .filter(path -> path != null && !path.isBlank())
-                    .forEach(this::initComponentsForPath);
-        }
-    }
-
-    public void initComponentsForPath(String componentPath) {
-        Reflections reflections = new Reflections(componentPath);
-
-        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ComponentName.class);
-
-        for (Class<?> clazz : annotated) {
-            ComponentName annotation = clazz.getAnnotation(ComponentName.class);
-            switch (annotation.type()) {
-                case INPUT -> inputComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
-                case ADAPTER -> adapterComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
-                case TRANSFORMER -> transformerComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
-                case OUTPUT -> outputComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
-            }
-        }
+        componentPaths.add("io.github.yalz.ldio");
+        componentPaths.remove("");
+        this.componentPaths.addAll(componentPaths);
+        rescanForComponents();
     }
 
     public ComponentInfo getComponentClass(EtlComponentConfig componentConfig, ComponentName.ComponentType type) {
@@ -57,6 +40,8 @@ public class ComponentRegistry {
     }
 
     public Map<String, List<Map<String, Object>>> getCatalog() {
+        rescanForComponents();
+
         Map<String, List<Map<String, Object>>> groupedCatalog = new LinkedHashMap<>();
 
         groupedCatalog.put("inputs", buildCatalogEntries(inputComponents));
@@ -65,6 +50,33 @@ public class ComponentRegistry {
         groupedCatalog.put("outputs", buildCatalogEntries(outputComponents));
 
         return groupedCatalog;
+    }
+
+    private void rescanForComponents() {
+        inputComponents.clear();
+        adapterComponents.clear();
+        transformerComponents.clear();
+        outputComponents.clear();
+
+        componentPaths.stream()
+                .filter(path -> path != null && !path.isBlank())
+                .forEach(this::initComponentsForPath);
+    }
+
+    public void initComponentsForPath(String componentPath) {
+        Reflections reflections = new Reflections(componentPath);
+
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ComponentName.class);
+
+        for (Class<?> clazz : annotated) {
+            ComponentName annotation = clazz.getAnnotation(ComponentName.class);
+            switch (annotation.type()) {
+                case INPUT -> inputComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+                case ADAPTER -> adapterComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+                case TRANSFORMER -> transformerComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+                case OUTPUT -> outputComponents.put(annotation.value(), new ComponentInfo(annotation.description(), clazz));
+            }
+        }
     }
 
     private List<Map<String, Object>> buildCatalogEntries(Map<String, ComponentInfo> componentMap) {

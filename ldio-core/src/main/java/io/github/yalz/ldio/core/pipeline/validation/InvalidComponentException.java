@@ -1,7 +1,7 @@
-package io.github.yalz.ldio.core.pipeline;
+package io.github.yalz.ldio.core.pipeline.validation;
 
-public class NoValidComponentException extends RuntimeException {
-    public NoValidComponentException(String message) {
+public class InvalidComponentException extends RuntimeException {
+    public InvalidComponentException(String message) {
         super(message);
     }
 }

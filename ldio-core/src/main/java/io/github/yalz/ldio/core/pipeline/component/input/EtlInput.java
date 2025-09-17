@@ -4,6 +4,7 @@ import io.github.yalz.ldio.core.dlq.DlqProducer;
 import io.github.yalz.ldio.core.pipeline.component.EtlComponent;
 import io.github.yalz.ldio.core.pipeline.component.adapter.EtlAdapter;
 import io.github.yalz.ldio.core.pipeline.component.adapter.RdfAdapter;
+import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
 import io.github.yalz.ldio.core.pipeline.config.InputConfig;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.pubsub.api.reactive.RedisPubSubReactiveCommands;
@@ -23,7 +24,7 @@ public abstract class EtlInput extends EtlComponent {
 
     public EtlInput(String pipelineName, InputConfig config) {
         super(pipelineName, config);
-        this.adapter = new RdfAdapter(pipelineName, config);
+        this.adapter = new RdfAdapter(pipelineName, new EtlComponentConfig("LdioInternal:RdfAdapter"));
         this.channelName = "etl:" + pipelineName + ":stream";
     }
 

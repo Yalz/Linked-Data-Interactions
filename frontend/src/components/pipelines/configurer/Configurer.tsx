@@ -6,14 +6,16 @@ import {
   Card,
   CardContent,
   TextField,
-  IconButton,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import { type AlertColor } from '@mui/material/Alert';
+
 import {
   ComponentCard,
   type EtlComponentConfig,
   type AvailableComponent,
 } from "./ComponentCard";
+import { ComponentGroup } from "./ComponentGroup";
+import { SubmitFeedback } from "./SubmitFeedback";
 import axios from "axios";
 
 type PipelineConfig = {
@@ -44,6 +46,14 @@ export const Configurer: React.FC = () => {
   const [availableTransformers, setAvailableTransformers] = useState<AvailableComponent[]>([]);
   const [availableOutputs, setAvailableOutputs] = useState<AvailableComponent[]>([]);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>("success");
+
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>[]>([]);
+
+
+
   const payload: PipelineConfig = {
     name: pipelineName,
     input: showAdapter ? { ...input, adapter: input.adapter } : input,
@@ -72,60 +82,38 @@ export const Configurer: React.FC = () => {
       transformers,
       outputs,
     };
+
     axios.post("http://localhost:8080/", payload)
+      .then(() => {
+        setSnackbarMessage(`Pipeline "${pipelineName}" successfully created`);
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      })
+      .catch((err) => {
+        const rawReport = err.response?.data?.message;
+
+        try {
+          const parsedReport = typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
+
+          console.log(parsedReport)
+          if (Array.isArray(parsedReport["Validation failed"])) {
+            setValidationErrors(parsedReport["Validation failed"]);
+            setSnackbarOpen(false); // Don't show snackbar for validation errors
+          } else {
+            console.log(parsedReport)
+            setValidationErrors([{ general: "Invalid validation report format" }]);
+          }
+        } catch (parseError) {
+          console.log(rawReport)
+          setValidationErrors([{ general: "Failed to parse validation report" }]);
+        }
+      });
+
+
   };
 
-  const renderComponentGroup = (
-    title: string,
-    components: EtlComponentConfig[],
-    setComponents: React.Dispatch<React.SetStateAction<EtlComponentConfig[]>>,
-    available: AvailableComponent[]
-  ) => (
-    <>
-      <Typography variant="h6">{title}</Typography>
-      {components.map((comp, idx) => (
-        <Box key={idx} sx={{ position: 'relative' }}>
-          <ComponentCard
-            title={`${title} ${idx + 1}`}
-            component={comp}
-            onChange={(updated) => {
-              const updatedList = [...components];
-              updatedList[idx] = updated;
-              setComponents(updatedList);
-            }}
-            availableComponents={available}
-          />
-          <IconButton
-            size="small"
-            onClick={() => {
-              const updatedList = components.filter((_, i) => i !== idx);
-              setComponents(updatedList);
-            }}
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              zIndex: 1,
-              backgroundColor: 'rgba(255,255,255,0.8)',
-              '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-            }}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      ))}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => setComponents([...components, { name: "", config: {} }])}
-      >
-        Add {title}
-      </Button>
-    </>
-  );
-
   return (
-    <Box sx={{ width: '80%', mx: 'auto' }}>
+    <Box sx={{ width: '60%', mx: 'auto' }}>
       <Card sx={{ mx: "auto", boxShadow: 3 }}>
         <CardContent>
           <Typography variant="h4" gutterBottom>
@@ -151,10 +139,13 @@ export const Configurer: React.FC = () => {
               variant="outlined"
               color="secondary"
               onClick={() => {
-                setShowAdapter(!showAdapter);
-                if (!input.adapter) {
+                if (showAdapter) {
+                  const { adapter, ...rest } = input;
+                  setInput(rest);
+                } else {
                   setInput({ ...input, adapter: { name: "", config: {} } });
                 }
+                setShowAdapter(!showAdapter);
               }}
             >
               {showAdapter ? "Remove Adapter" : "Add Adapter"}
@@ -169,8 +160,8 @@ export const Configurer: React.FC = () => {
               />
             )}
 
-            {renderComponentGroup("Transformer", transformers, setTransformers, availableTransformers)}
-            {renderComponentGroup("Output", outputs, setOutputs, availableOutputs)}
+            <ComponentGroup title="Transformer" components={transformers} setComponents={setTransformers} available={availableTransformers} />
+            <ComponentGroup title="Output" components={outputs} setComponents={setOutputs} available={availableOutputs} />
 
             <Box
               sx={{
@@ -200,6 +191,17 @@ export const Configurer: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
+      <SubmitFeedback
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        validationErrors={validationErrors}
+        onClose={() => {
+          setSnackbarOpen(false);
+          setValidationErrors([]);
+        }}
+      />
+
     </Box>
   );
 };

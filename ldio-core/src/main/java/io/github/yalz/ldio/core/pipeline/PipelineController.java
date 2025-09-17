@@ -5,6 +5,7 @@ import io.github.yalz.ldio.core.pipeline.config.PipelineConfig;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,14 @@ public class PipelineController {
     }
 
     @Post
-    String createPipeline(@Body PipelineConfig pipelineConfig) {
+    String createPipeline(@Body @Valid PipelineConfig pipelineConfig) {
         pipelineManager.createPipeline(pipelineConfig);
         return pipelineConfig.getName();
+    }
+
+    @Delete("/{pipeline}")
+    void deletePipeline(@PathVariable String pipeline) {
+        pipelineManager.deletePipeline(pipeline);
     }
 
     @Get

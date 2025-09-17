@@ -1,6 +1,5 @@
 package io.github.yalz.ldio.core.pipeline.validation;
 
-import io.github.yalz.ldio.core.pipeline.NoValidComponentException;
 import io.github.yalz.ldio.core.pipeline.PipelineManager;
 import io.github.yalz.ldio.core.pipeline.component.ComponentName;
 import io.github.yalz.ldio.core.pipeline.component.ComponentProperty;
@@ -15,7 +14,6 @@ import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
 import jakarta.inject.Singleton;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 
 @Singleton
 public class PipelineConfigValidator implements ConstraintValidator<ValidPipelineConfig, PipelineConfig> {
@@ -36,36 +34,18 @@ public class PipelineConfigValidator implements ConstraintValidator<ValidPipelin
 
         boolean valid = true;
 
-        if (config.getName() == null || config.getName().isBlank()) {
-            context.buildConstraintViolationWithTemplate("Pipeline name must not be blank")
-                    .addPropertyNode("name")
-                    .addConstraintViolation();
-            valid = false;
-        }
+        valid &= validateRequired(config.getName(), "Pipeline name must not be blank", context, "name");
+        valid &= validateRequired(config.getInput(), "Input component must be provided", context, "input");
+        valid &= validateRequired(config.getInput().getName(), "Input component must have a name", context, "input.name");
 
-        if (config.getInput() == null || config.getInput().getName() == null || config.getInput().getName().isBlank()) {
-            context.buildConstraintViolationWithTemplate("Input component must have a name")
-                    .addPropertyNode("input.name")
-                    .addConstraintViolation();
-            valid = false;
-        }
-
-        if (isInvalidComponent(config.getInput(), ComponentName.ComponentType.INPUT, context)) {
-            valid = false;
-        }
+        valid &= validateComponent(config.getInput(), ComponentName.ComponentType.INPUT, context);
 
         if (config.getInput().getAdapter() != null) {
-            if (isInvalidComponent(config.getInput(), ComponentName.ComponentType.ADAPTER, context)) {
-                valid = false;
-            }
+            valid &= validateComponent(config.getInput(), ComponentName.ComponentType.ADAPTER, context);
         }
 
-        if (!config.getTransformers().isEmpty()) {
-            for (var transformer : config.getTransformers()) {
-                if (isInvalidComponent(transformer, ComponentName.ComponentType.TRANSFORMER, context)) {
-                    valid = false;
-                }
-            }
+        for (var transformer : config.getTransformers()) {
+            valid &= validateComponent(transformer, ComponentName.ComponentType.TRANSFORMER, context);
         }
 
         if (config.getOutputs() == null || config.getOutputs().isEmpty()) {
@@ -73,13 +53,9 @@ public class PipelineConfigValidator implements ConstraintValidator<ValidPipelin
                     .addPropertyNode("outputs")
                     .addConstraintViolation();
             valid = false;
-        }
-
-        if (!config.getOutputs().isEmpty()) {
+        } else {
             for (var output : config.getOutputs()) {
-                if (isInvalidComponent(output, ComponentName.ComponentType.OUTPUT, context)) {
-                    valid = false;
-                }
+                valid &= validateComponent(output, ComponentName.ComponentType.OUTPUT, context);
             }
         }
 
@@ -97,38 +73,43 @@ public class PipelineConfigValidator implements ConstraintValidator<ValidPipelin
         return valid;
     }
 
-    boolean isInvalidComponent(EtlComponentConfig config, ComponentName.ComponentType componentType, ConstraintValidatorContext context) {
+    private boolean validateRequired(@Nullable Object value, String message, ConstraintValidatorContext context, String property) {
+        if (value == null || (value instanceof String str && str.isBlank())) {
+            context.buildConstraintViolationWithTemplate(message)
+                    .addPropertyNode(property)
+                    .addConstraintViolation();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateComponent(EtlComponentConfig config, ComponentName.ComponentType type, ConstraintValidatorContext context) {
         try {
-            var componentClass = componentRegistry.getComponentClass(config, componentType).componentClass();
+            var componentClass = componentRegistry.getComponentClass(config, type).componentClass();
 
             for (Field field : componentClass.getDeclaredFields()) {
                 ComponentProperty property = field.getAnnotation(ComponentProperty.class);
-                if (property != null) {
-                    String formattedKey = formattedKey(property.key());
-                    if (!config.getConfig().containsKey(formattedKey)) {
-                        context.buildConstraintViolationWithTemplate("Component %s is missing property %s.".formatted(config.getName(), property.key()))
-                                .addPropertyNode(componentType.name().toLowerCase())
-                                .addConstraintViolation();
-                        return true;
-                    }
-                    if (config.getConfig().get(formattedKey).isEmpty() || config.getConfig().get(formattedKey).isBlank()) {
-                        context.buildConstraintViolationWithTemplate("Component %s property %s is empty.".formatted(config.getName(), property.key()))
-                                .addPropertyNode(componentType.name().toLowerCase())
-                                .addConstraintViolation();
-                        return true;
-                    }
+                if (property == null) continue;
+
+                String key = formattedKey(property.key());
+                String value = config.getConfig().get(key);
+
+                if (value == null || value.isBlank()) {
+                    context.buildConstraintViolationWithTemplate("Component %s property %s is missing or empty.".formatted(config.getName(), property.key()))
+                            .addPropertyNode(type.name().toLowerCase())
+                            .addConstraintViolation();
+                    return false;
                 }
             }
-            return false;
 
-        } catch (NoValidComponentException e) {
-            context.buildConstraintViolationWithTemplate("%s component '%s' does not exist.".formatted(componentType, config.getName()))
-                    .addPropertyNode(componentType.name().toLowerCase())
+        } catch (InvalidComponentException e) {
+            context.buildConstraintViolationWithTemplate("%s component '%s' does not exist.".formatted(type, config.getName()))
+                    .addPropertyNode(type.name().toLowerCase())
                     .addConstraintViolation();
-
-            return true;
+            return false;
         }
 
+        return true;
     }
 
     private String formattedKey(String property) {

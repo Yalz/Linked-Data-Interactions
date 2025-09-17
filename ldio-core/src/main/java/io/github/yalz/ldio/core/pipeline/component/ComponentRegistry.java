@@ -1,5 +1,6 @@
 package io.github.yalz.ldio.core.pipeline.component;
 
+import io.github.yalz.ldio.core.pipeline.validation.InvalidComponentException;
 import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Value;
@@ -34,7 +35,7 @@ public class ComponentRegistry {
         };
 
         if (componentClass == null) {
-            throw new IllegalArgumentException(String.format("No %s component with name %s", type, componentConfig.getName()));
+            throw new InvalidComponentException(String.format("No %s component with name %s", type, componentConfig.getName()));
         }
         return componentClass;
     }

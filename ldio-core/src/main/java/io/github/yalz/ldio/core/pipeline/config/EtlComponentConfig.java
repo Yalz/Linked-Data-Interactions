@@ -17,12 +17,26 @@ public class EtlComponentConfig {
         this.config = normalizeKeys(flatten(config != null ? config : Map.of()));
     }
 
+    public EtlComponentConfig(String name) {
+        this.name = name;
+        this.config = Map.of();
+    }
+
     public String getName() {
         return name;
     }
 
     public Map<String, String> getConfig() {
         return config;
+    }
+
+    public Map<String, Object> getRawConfig() {
+        return config.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> (Object) entry.getValue()
+                ));
     }
 
     public Map<String, String> normalizeKeys(Map<String, String> config) {

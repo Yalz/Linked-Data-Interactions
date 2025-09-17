@@ -1,17 +1,22 @@
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
-import { Dashboard } from './Dashboard';
-import { LdioComponentList } from './ldio-component/LdioComponentList';
+import { Dashboard } from './components/Dashboard';
+import { LdioComponentList } from './components/pipelines/ldio-component/LdioComponentList';
 import { Box } from '@mui/material';
-import { Configurer } from './configurer/Configurer';
+import { Configurer } from './components/pipelines/configurer/Configurer';
+import { PipelineOverview } from './components/pipelines/overview/PipelineOverview';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Dashboard />} />
+      <Route index element={<Dashboard />} />
+        <Route path='pipelines'>
+          <Route path="overview" element={<PipelineOverview />} />
+          <Route path="configure" element={<Configurer />} />
+        </Route>
         <Route path="catalog" element={<LdioComponentList />} />
-        <Route path="configure" element={<Configurer />} />
+        
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Route>
     </Routes>

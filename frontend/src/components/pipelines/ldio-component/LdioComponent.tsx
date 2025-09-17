@@ -70,43 +70,29 @@ export const LdioComponent: React.FC<PropertyListProps> = ({ component, type }) 
       {/* Properties */}
       <TableCell sx={{ width: '40%', verticalAlign: 'top' }}>
         <Box maxHeight={256} overflow="auto">
-          <Table size="small" component={Paper}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Key</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Default</TableCell>
-                <TableCell>Required</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {component.properties?.length ? (
-                component.properties.map((prop, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ wordBreak: 'break-word', whiteSpace: 'normal' }}>{prop.key}</TableCell>
-                    <TableCell sx={{ wordBreak: 'break-word', whiteSpace: 'normal' }}>{prop.expectedType}</TableCell>
-                    <TableCell sx={{ wordBreak: 'break-word', whiteSpace: 'normal' }}>{prop.defaultValue}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={prop.required ? "Required" : "Optional"}
-                        size="small"
-                        color={prop.required ? "error" : "warning"}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <Typography variant="body2" color="text.disabled" fontStyle="italic">
-                      No properties defined
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          {component.properties?.length ? (
+            component.properties.map((prop, index) => (
+              <Box key={index} sx={{ mb: 1 }}>
+                <Typography variant="body2">
+                  <strong>{prop.key}</strong> ({prop.expectedType})
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Default: {prop.defaultValue ?? "—"} |{" "}
+                  <Chip
+                    label={prop.required ? "Required" : "Optional"}
+                    size="small"
+                    color={prop.required ? "error" : "warning"}
+                    variant="outlined"
+                    sx={{ ml: 1 }}
+                  />
+                </Typography>
+              </Box>
+            ))
+          ) : (
+            <Typography variant="body2" color="text.disabled" fontStyle="italic">
+              No properties defined
+            </Typography>
+          )}
         </Box>
       </TableCell>
     </TableRow>

@@ -19,12 +19,16 @@ import {
     BarChart as BarChartIcon,
     ShoppingBag as ShoppingBagIcon,
     Inbox as InboxIcon,
+    Upcoming as UpcomingIcon,
+    MenuBook as MenuBookIcon,
+    DesignServices as DesignServicesIcon,
     AccountCircle as AccountCircleIcon,
     Settings as SettingsIcon,
     PowerSettingsNew as PowerIcon,
     ChevronRight as ChevronRightIcon,
-
+    Send as SendIcon
 } from "@mui/icons-material";
+
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { Link } from "react-router-dom";
 
@@ -58,55 +62,23 @@ export function Sidebar() {
                 <Accordion expanded={open === 1} onChange={() => handleOpen(1)}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <ListItemIcon>
-                            <BarChartIcon />
+                            <SendIcon />
                         </ListItemIcon>
                         <Typography>Pipelines</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         <List disablePadding>
-                            <ListItem component={Link} to="configure">
+                            <ListItem component={Link} to="pipelines/overview">
                                 <ListItemIcon>
-                                    <ChevronRightIcon />
+                                    <MenuBookIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Overview" />
+                            </ListItem>
+                            <ListItem component={Link} to="pipelines/configure">
+                                <ListItemIcon>
+                                    <DesignServicesIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Configure a new pipeline" />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemIcon>
-                                    <ChevronRightIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Reporting" />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemIcon>
-                                    <ChevronRightIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Projects" />
-                            </ListItem>
-                        </List>
-                    </AccordionDetails>
-                </Accordion>
-
-                {/* E-Commerce Accordion */}
-                <Accordion expanded={open === 2} onChange={() => handleOpen(2)}>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <ListItemIcon>
-                            <ShoppingBagIcon />
-                        </ListItemIcon>
-                        <Typography>E-Commerce</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <List disablePadding>
-                            <ListItem>
-                                <ListItemIcon>
-                                    <ChevronRightIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Orders" />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemIcon>
-                                    <ChevronRightIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Products" />
                             </ListItem>
                         </List>
                     </AccordionDetails>
@@ -115,9 +87,18 @@ export function Sidebar() {
                 {/* Static Links */}
                 <ListItem component={Link} to="catalog">
                     <ListItemIcon>
-                        <ChevronRightIcon />
+                        <ShoppingBagIcon />
                     </ListItemIcon>
                     <ListItemText primary="Catalog" />
+                </ListItem>
+
+                <Divider sx={{ my: 2 }} />
+
+                <ListItem component={Link} to="http-sink">
+                    <ListItemIcon>
+                        <UpcomingIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Http Sink" />
                 </ListItem>
 
                 <Divider sx={{ my: 2 }} />

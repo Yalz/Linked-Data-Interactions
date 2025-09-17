@@ -5,14 +5,17 @@ import org.apache.jena.atlas.web.MediaType;
 import org.apache.jena.riot.Lang;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import static org.apache.jena.riot.RDFLanguages.nameToLang;
 
 public abstract class EtlComponent {
     protected final String pipelineName;
+    private final EtlComponentConfig config;
 
     public EtlComponent(String pipelineName, EtlComponentConfig config) {
         this.pipelineName = pipelineName;
+        this.config = config;
         injectComponentProperties(this, config);
     }
 
@@ -44,6 +47,10 @@ public abstract class EtlComponent {
                 }
             }
         }
+    }
+
+    public EtlComponentConfig getConfig() {
+        return config;
     }
 
     private static Object convert(String value, Class<?> targetType) {

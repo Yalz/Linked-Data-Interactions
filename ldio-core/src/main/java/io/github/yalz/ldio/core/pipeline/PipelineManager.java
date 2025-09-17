@@ -98,6 +98,7 @@ public class PipelineManager {
     private EtlComponent getComponent(String pipelineName, EtlComponentConfig componentConfig, ComponentType componentType) {
         try {
             var etlComponent = componentRegistry.getComponentClass(componentConfig, componentType)
+                    .componentClass()
                     .getConstructor(String.class, componentConfig.getClass())
                     .newInstance(pipelineName, componentConfig);
             beanContext.inject(etlComponent);
@@ -121,12 +122,16 @@ public class PipelineManager {
     }
 
     @EventListener
-    public void onApplicationEvent(PipelineDeletedEvent event) {
+    public void onPipelineDeleted(PipelineDeletedEvent event) {
         EtlPipeline pipeline = pipelines.remove(event.pipelineId());
         if (pipeline != null) {
             pipeline.cleanup();
             beanContext.destroyBean(pipeline);
         }
+    }
+
+    public void deletePipeline(String pipeline) {
+        onPipelineDeleted(new PipelineDeletedEvent(pipeline));
     }
 }
 

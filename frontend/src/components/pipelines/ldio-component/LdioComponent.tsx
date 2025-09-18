@@ -4,10 +4,6 @@ import {
   Typography,
   Box,
   Chip,
-  Table,
-  TableHead,
-  TableBody,
-  Paper,
 } from "@mui/material";
 
 interface PropertyListProps {

@@ -63,7 +63,7 @@ export const LdioComponentList: React.FC = () => {
   );
 
   return (
-    <Box sx={{ mx: "auto", width:"80%" }}>
+    <Box sx={{ mx: "auto", width:"90%" }}>
       <Typography
         variant="h4"
         gutterBottom

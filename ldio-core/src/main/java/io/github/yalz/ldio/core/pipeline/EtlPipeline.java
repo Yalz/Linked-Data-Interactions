@@ -8,7 +8,6 @@ import io.github.yalz.ldio.core.pipeline.component.transformer.EtlTransformer;
 import io.micronaut.context.LifeCycle;
 import io.micronaut.context.annotation.Prototype;
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import org.apache.jena.rdf.model.Model;
 
@@ -61,7 +60,13 @@ public class EtlPipeline implements LifeCycle<EtlPipeline> {
     }
 
     private void output(Model input) {
-        outputs.forEach(etlOutput -> etlOutput.handle(input));
+        outputs.forEach(etlOutput -> {
+            try {
+                etlOutput.handle(input);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override

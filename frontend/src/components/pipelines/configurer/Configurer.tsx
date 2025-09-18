@@ -113,7 +113,7 @@ export const Configurer: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '60%', mx: 'auto' }}>
+    <Box sx={{ width: '80%', mx: 'auto' }}>
       <Card sx={{ mx: "auto", boxShadow: 3 }}>
         <CardContent>
           <Typography variant="h4" gutterBottom>

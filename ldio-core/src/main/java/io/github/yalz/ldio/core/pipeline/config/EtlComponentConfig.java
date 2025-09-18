@@ -1,5 +1,6 @@
 package io.github.yalz.ldio.core.pipeline.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.serde.annotation.Serdeable;
 
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class EtlComponentConfig {
         return config;
     }
 
+    @JsonIgnore
     public Map<String, Object> getRawConfig() {
         return config.entrySet()
                 .stream()

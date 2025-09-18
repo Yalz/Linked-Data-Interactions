@@ -11,22 +11,20 @@ import {
     AccordionSummary,
     AccordionDetails,
     Divider,
-    Chip,
-    IconButton,
 } from "@mui/material";
 import {
     ExpandMore as ExpandMoreIcon,
-    BarChart as BarChartIcon,
     ShoppingBag as ShoppingBagIcon,
-    Inbox as InboxIcon,
-    Upcoming as UpcomingIcon,
     MenuBook as MenuBookIcon,
     DesignServices as DesignServicesIcon,
     AccountCircle as AccountCircleIcon,
     Settings as SettingsIcon,
     PowerSettingsNew as PowerIcon,
-    ChevronRight as ChevronRightIcon,
-    Send as SendIcon
+    Send as SendIcon,
+    SettingsSuggest as SettingsSuggestIcon,
+    Http as HttpIcon,
+    Outbox,
+    MoveToInbox
 } from "@mui/icons-material";
 
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -59,7 +57,7 @@ export function Sidebar() {
 
             <List>
                 {/* Pipelines Accordion */}
-                <Accordion expanded={open === 1} onChange={() => handleOpen(1)}>
+                <Accordion expanded={open === 2} onChange={() => handleOpen(2)}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <ListItemIcon>
                             <SendIcon />
@@ -84,22 +82,61 @@ export function Sidebar() {
                     </AccordionDetails>
                 </Accordion>
 
-                {/* Static Links */}
-                <ListItem component={Link} to="catalog">
-                    <ListItemIcon>
-                        <ShoppingBagIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Catalog" />
-                </ListItem>
+                <Accordion expanded={open === 1} onChange={() => handleOpen(1)}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <ListItemIcon>
+                            <SettingsSuggestIcon />
+                        </ListItemIcon>
+                        <Typography>Components</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <List disablePadding>
+                            <ListItem component={Link} to="components/catalog">
+                                <ListItemIcon>
+                                    <ShoppingBagIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Catalog" />
+                            </ListItem>
+                            <ListItem
+                                component="a"
+                                href="https://github.com/Yalz/Linked-Data-Interactions/issues?q=label%3A%22New%20Component%22"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                <ListItemIcon>
+                                    <GitHubIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Suggest new component" />
+                            </ListItem>
+                        </List>
+                    </AccordionDetails>
+                </Accordion>
 
                 <Divider sx={{ my: 2 }} />
 
-                <ListItem component={Link} to="http-sink">
-                    <ListItemIcon>
-                        <UpcomingIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Http Sink" />
-                </ListItem>
+                <Accordion expanded={open === 3} onChange={() => handleOpen(3)}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <ListItemIcon>
+                            <HttpIcon />
+                        </ListItemIcon>
+                        <Typography>Http Debug</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <List disablePadding>
+                            <ListItem component={Link} to="http-debug/sink">
+                                <ListItemIcon>
+                                    <MoveToInbox />
+                                </ListItemIcon>
+                                <ListItemText primary="Http Sink" />
+                            </ListItem>
+                            <ListItem component={Link} to="http-debug/send">
+                                <ListItemIcon>
+                                    <Outbox />
+                                </ListItemIcon>
+                                <ListItemText primary="Http Send" />
+                            </ListItem>
+                        </List>
+                    </AccordionDetails>
+                </Accordion>
 
                 <Divider sx={{ my: 2 }} />
 
@@ -112,24 +149,6 @@ export function Sidebar() {
                         <GitHubIcon />
                     </ListItemIcon>
                     <ListItemText primary="Contribute/Report Issue" />
-                </ListItem>
-                <ListItem>
-                    <ListItemIcon>
-                        <AccountCircleIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                </ListItem>
-                <ListItem>
-                    <ListItemIcon>
-                        <SettingsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Settings" />
-                </ListItem>
-                <ListItem>
-                    <ListItemIcon>
-                        <PowerIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Log Out" />
                 </ListItem>
             </List>
         </Paper>

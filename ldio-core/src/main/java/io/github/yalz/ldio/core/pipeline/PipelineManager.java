@@ -6,11 +6,12 @@ import io.github.yalz.ldio.core.pipeline.component.ComponentName.ComponentType;
 import io.github.yalz.ldio.core.pipeline.component.ComponentRegistry;
 import io.github.yalz.ldio.core.pipeline.component.EtlComponent;
 import io.github.yalz.ldio.core.pipeline.component.adapter.EtlAdapter;
-import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
-import io.github.yalz.ldio.core.pipeline.config.PipelineConfig;
 import io.github.yalz.ldio.core.pipeline.component.input.EtlInput;
 import io.github.yalz.ldio.core.pipeline.component.output.EtlOutput;
 import io.github.yalz.ldio.core.pipeline.component.transformer.EtlTransformer;
+import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
+import io.github.yalz.ldio.core.pipeline.config.PipelineConfig;
+import io.github.yalz.ldio.core.pipeline.repository.RedisPipelineRepository;
 import io.lettuce.core.RedisClient;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.annotation.Context;
@@ -18,12 +19,14 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.runtime.event.ApplicationShutdownEvent;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static io.github.yalz.ldio.core.pipeline.component.ComponentName.ComponentType.*;
@@ -34,7 +37,8 @@ public class PipelineManager {
 
     private final BeanContext beanContext;
     private final ComponentRegistry componentRegistry;
-    private final ApplicationEventPublisher<PipelineCreatedEvent> pipelineEventPublisher;
+    private final ApplicationEventPublisher<PipelineCreatedEvent> creationEventPublisher;
+    private final ApplicationEventPublisher<PipelineDeletedEvent> deletionEventPublisher;
 
     @Inject
     OrchestratorConfig orchestratorConfig;
@@ -42,17 +46,20 @@ public class PipelineManager {
     RedisClient redisClient;
     @Inject
     DlqProducer dlqProducer;
+    @Inject
+    RedisPipelineRepository repository;
     // Track active pipelines by name
     private final Map<String, EtlPipeline> pipelines = new ConcurrentHashMap<>();
 
-    public PipelineManager(BeanContext beanContext, ComponentRegistry componentRegistry, ApplicationEventPublisher<PipelineCreatedEvent> pipelineEventPublisher) {
+    public PipelineManager(BeanContext beanContext, ComponentRegistry componentRegistry, ApplicationEventPublisher<PipelineCreatedEvent> creationEventPublisher, ApplicationEventPublisher<PipelineDeletedEvent> deletionEventPublisher) {
         this.beanContext = beanContext;
         this.componentRegistry = componentRegistry;
-        this.pipelineEventPublisher = pipelineEventPublisher;
+        this.creationEventPublisher = creationEventPublisher;
+        this.deletionEventPublisher = deletionEventPublisher;
     }
 
     public void createPipeline(PipelineConfig pipelineConfig) {
-        if (pipelines.containsKey(pipelineConfig.getName())) {
+        if (repository.hasKey(pipelineConfig.getName())) {
             throw new IllegalStateException("Pipeline already registered: " + pipelineConfig.getName());
         }
 
@@ -87,12 +94,22 @@ public class PipelineManager {
 
         pipeline.init();
 
-        pipelineEventPublisher.publishEvent(new PipelineCreatedEvent(pipelineConfig.getName(), input));
+        creationEventPublisher.publishEvent(new PipelineCreatedEvent(pipelineConfig.getName(), input));
         pipelines.put(pipelineConfig.getName(), pipeline);
+
+        try {
+            repository.save(pipelineConfig);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, EtlPipeline> getPipelines() {
         return pipelines;
+    }
+
+    public Map<String, PipelineConfig> getPipelineConfigs() {
+        return repository.findAll();
     }
 
     private EtlComponent getComponent(String pipelineName, EtlComponentConfig componentConfig, ComponentType componentType) {
@@ -111,8 +128,14 @@ public class PipelineManager {
 
     @EventListener
     public void onStartup(ApplicationStartupEvent event) {
-        if (orchestratorConfig.getPipelines() != null) {
-            orchestratorConfig.getPipelines().forEach(this::createPipeline);
+        if (repository.findAll() != null) {
+            var savedPipelines = repository.findAll();
+            savedPipelines.values().forEach(this::createPipeline);
+
+            orchestratorConfig.getPipelines()
+                    .stream()
+                    .filter(config -> !savedPipelines.containsKey(config.getName()))
+                    .forEach(this::createPipeline);
         }
     }
 
@@ -125,13 +148,14 @@ public class PipelineManager {
     public void onPipelineDeleted(PipelineDeletedEvent event) {
         EtlPipeline pipeline = pipelines.remove(event.pipelineId());
         if (pipeline != null) {
+            repository.delete(event.pipelineId());
             pipeline.cleanup();
             beanContext.destroyBean(pipeline);
         }
     }
 
     public void deletePipeline(String pipeline) {
-        onPipelineDeleted(new PipelineDeletedEvent(pipeline));
+        deletionEventPublisher.publishEvent(new PipelineDeletedEvent(pipeline));
     }
 }
 

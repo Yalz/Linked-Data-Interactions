@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 public class PipelineController {
@@ -43,11 +41,6 @@ public class PipelineController {
     @Get
     @Produces(MediaType.APPLICATION_JSON)
     Map<String, PipelineConfig> getActivePipelines() {
-        return pipelineManager.getPipelines().entrySet()
-                .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> PipelineConfig.fromPipeline(entry.getValue())
-                ));
+        return pipelineManager.getPipelineConfigs();
     }
 }

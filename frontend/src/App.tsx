@@ -5,6 +5,8 @@ import { LdioComponentList } from './components/pipelines/ldio-component/LdioCom
 import { Box } from '@mui/material';
 import { Configurer } from './components/pipelines/configurer/Configurer';
 import { PipelineOverview } from './components/pipelines/overview/PipelineOverview';
+import { SinkMonitor } from './components/http-debug/SinkMonitor';
+import { HttpOutput } from './components/http-debug/HttpOutput';
 
 function App() {
   return (
@@ -15,7 +17,13 @@ function App() {
           <Route path="overview" element={<PipelineOverview />} />
           <Route path="configure" element={<Configurer />} />
         </Route>
-        <Route path="catalog" element={<LdioComponentList />} />
+        <Route path='components'>
+          <Route path="catalog" element={<LdioComponentList />} />
+        </Route>
+        <Route path='http-debug'>
+          <Route path="sink" element={<SinkMonitor />} />
+          <Route path="send" element={<HttpOutput />} />
+        </Route>
         
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Route>

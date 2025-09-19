@@ -9,5 +9,5 @@ public abstract class EtlOutput extends EtlComponent {
         super(pipelineName, config);
     }
 
-    public abstract void handle(Model data);
+    public abstract void handle(Model data) throws Exception;
 }

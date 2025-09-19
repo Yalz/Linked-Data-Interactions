@@ -17,6 +17,7 @@ import {
 import { ComponentGroup } from "./ComponentGroup";
 import { SubmitFeedback } from "./SubmitFeedback";
 import axios from "axios";
+import { API_BASE } from "../../../api.config";
 
 type PipelineConfig = {
   name: string;
@@ -52,8 +53,6 @@ export const Configurer: React.FC = () => {
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>[]>([]);
 
-
-
   const payload: PipelineConfig = {
     name: pipelineName,
     input: showAdapter ? { ...input, adapter: input.adapter } : input,
@@ -63,7 +62,7 @@ export const Configurer: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/config")
+      .get(`${API_BASE}/config`)
       .then((response) => {
         setAvailableInputs(response.data.inputs);
         setAvailableAdapters(response.data.adapters);
@@ -83,7 +82,7 @@ export const Configurer: React.FC = () => {
       outputs,
     };
 
-    axios.post("http://localhost:8080/", payload)
+    axios.post(`${API_BASE}`, payload)
       .then(() => {
         setSnackbarMessage(`Pipeline "${pipelineName}" successfully created`);
         setSnackbarSeverity("success");
@@ -113,7 +112,7 @@ export const Configurer: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '60%', mx: 'auto' }}>
+    <Box sx={{ width: '80%', mx: 'auto' }}>
       <Card sx={{ mx: "auto", boxShadow: 3 }}>
         <CardContent>
           <Typography variant="h4" gutterBottom>

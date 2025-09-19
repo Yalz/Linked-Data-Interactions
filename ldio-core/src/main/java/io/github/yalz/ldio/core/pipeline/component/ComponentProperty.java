@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 public @interface ComponentProperty {
     String key();
-    String defaultValue();
+    String defaultValue() default "";
     boolean required() default false;
     Class expectedType() default String.class;
 }

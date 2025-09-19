@@ -21,7 +21,7 @@ export const LdioComponentList: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/config")
+      .get(`/api/config`)
       .then((response) => {
         setInputs(response.data.inputs);
         setAdapters(response.data.adapters);

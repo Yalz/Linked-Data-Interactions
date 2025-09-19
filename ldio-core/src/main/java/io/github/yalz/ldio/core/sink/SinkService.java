@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +16,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Singleton
-public class SinkStreamService {
-    private final Logger logger = LoggerFactory.getLogger(SinkStreamService.class);
+public class SinkService {
+    private final Logger logger = LoggerFactory.getLogger(SinkService.class);
     private final RedisCommands<String, String> redis;
 
-    public SinkStreamService(RedisClient redisClient) {
+    public SinkService(RedisClient redisClient) {
         this.redis = redisClient.connect().sync();
     }
 
@@ -58,6 +59,14 @@ public class SinkStreamService {
         }
 
         return result;
+    }
+
+    public void writeToSink(String pipelineName, String data) {
+        Map<String, String> message = Map.of(
+                "data", data,
+                "timestamp", Instant.now().toString()
+        );
+        redis.xadd("sink:" + pipelineName, message);
     }
 
     @EventListener

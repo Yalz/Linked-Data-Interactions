@@ -28,7 +28,7 @@ export const SinkMonitor: React.FC = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/sink/messages");
+        const res = await axios.get(`/api/sink/messages`);
         setSinkData(res.data);
       } catch (err) {
         console.error("Failed to fetch sink messages:", err);

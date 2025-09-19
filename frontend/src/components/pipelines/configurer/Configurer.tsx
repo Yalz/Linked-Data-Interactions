@@ -52,8 +52,6 @@ export const Configurer: React.FC = () => {
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>[]>([]);
 
-
-
   const payload: PipelineConfig = {
     name: pipelineName,
     input: showAdapter ? { ...input, adapter: input.adapter } : input,
@@ -63,7 +61,7 @@ export const Configurer: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/config")
+      .get(`/api/config`)
       .then((response) => {
         setAvailableInputs(response.data.inputs);
         setAvailableAdapters(response.data.adapters);
@@ -83,7 +81,7 @@ export const Configurer: React.FC = () => {
       outputs,
     };
 
-    axios.post("http://localhost:8080/", payload)
+    axios.post(`/api`, payload)
       .then(() => {
         setSnackbarMessage(`Pipeline "${pipelineName}" successfully created`);
         setSnackbarSeverity("success");

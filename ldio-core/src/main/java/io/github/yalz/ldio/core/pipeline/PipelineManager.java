@@ -58,8 +58,8 @@ public class PipelineManager {
         this.deletionEventPublisher = deletionEventPublisher;
     }
 
-    public void createPipeline(PipelineConfig pipelineConfig) {
-        if (repository.hasKey(pipelineConfig.getName())) {
+    public void createPipeline(PipelineConfig pipelineConfig, boolean persist) {
+        if (pipelines.containsKey(pipelineConfig.getName())) {
             throw new IllegalStateException("Pipeline already registered: " + pipelineConfig.getName());
         }
 
@@ -97,11 +97,14 @@ public class PipelineManager {
         creationEventPublisher.publishEvent(new PipelineCreatedEvent(pipelineConfig.getName(), input));
         pipelines.put(pipelineConfig.getName(), pipeline);
 
-        try {
-            repository.save(pipelineConfig);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (persist) {
+            try {
+                repository.save(pipelineConfig);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
+
     }
 
     public Map<String, EtlPipeline> getPipelines() {
@@ -130,12 +133,12 @@ public class PipelineManager {
     public void onStartup(ApplicationStartupEvent event) {
         if (repository.findAll() != null) {
             var savedPipelines = repository.findAll();
-            savedPipelines.values().forEach(this::createPipeline);
+            savedPipelines.values().forEach(config -> createPipeline(config, false));
 
             orchestratorConfig.getPipelines()
                     .stream()
                     .filter(config -> !savedPipelines.containsKey(config.getName()))
-                    .forEach(this::createPipeline);
+                    .forEach(config -> createPipeline(config, true));
         }
     }
 

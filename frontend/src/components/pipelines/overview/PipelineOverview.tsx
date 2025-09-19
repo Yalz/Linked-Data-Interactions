@@ -44,15 +44,14 @@ export const PipelineOverview: React.FC = () => {
   const [pipelines, setPipelines] = useState<Record<string, PipelineConfig>>({});
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-
   useEffect(() => {
-    axios.get("http://localhost:8080/")
+    axios.get(`/api`)
       .then((res) => setPipelines(res.data))
       .catch((err) => console.error("Failed to fetch pipelines:", err));
   }, []);
 
   const onDeletePipeline = () => {
-    axios.delete(`http://localhost:8080/${deleteTarget}`)
+    axios.delete(`/api/${deleteTarget}`)
       .then(() => {
         setPipelines(prev => {
           const updated = { ...prev };

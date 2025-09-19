@@ -34,7 +34,7 @@ export const HttpOutput: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/")
+      .get(`/api`)
       .then((res) => {
         const allPipelines = Object.values(res.data);
         const filtered = allPipelines
@@ -57,7 +57,7 @@ export const HttpOutput: React.FC = () => {
 
     try {
       await axios.post(
-        `http://localhost:8080/pipeline/${selectedPipeline}`,
+        `/api/pipeline/${selectedPipeline}`,
         payload,
         {
           headers: {

@@ -29,7 +29,7 @@ public class PipelineController {
 
     @Post
     String createPipeline(@Body @Valid PipelineConfig pipelineConfig) {
-        pipelineManager.createPipeline(pipelineConfig);
+        pipelineManager.createPipeline(pipelineConfig, true);
         return pipelineConfig.getName();
     }
 

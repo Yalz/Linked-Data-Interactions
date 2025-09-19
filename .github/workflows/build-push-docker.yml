@@ -1,15 +1,19 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images
 
 on:
   push:
     branches: [ master ]
+  workflow_dispatch:
+
 
 jobs:
-  build:
+  backend:
+    name: Build Backend Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,7 +30,7 @@ jobs:
       - name: Generate Dockerfile
         run: ./gradlew dockerfile
 
-      - name: Prepare Docker layers
+      - name: Build backend
         run: ./gradlew :ldio-core:clean :ldio-core:build :ldio-core:dockerfile
 
       - name: Build Docker image
@@ -38,3 +42,22 @@ jobs:
       - name: Push Docker image
         run: docker push ghcr.io/yalz/ldio:latest
 
+  frontend:
+    name: Build Frontend Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Vite frontend Docker image
+        run: docker build -t ghcr.io/yalz/ldio-ui:latest -f frontend/Dockerfile frontend/
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u Yalz --password-stdin
+
+      - name: Push Docker image
+        run: docker push ghcr.io/yalz/ldio-ui:latest

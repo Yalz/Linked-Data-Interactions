@@ -12,10 +12,10 @@ import java.util.Map;
 public class SinkController {
 
     @Inject
-    SinkStreamService sinkStreamService;
+    SinkService sinkService;
 
     @Get("/messages")
     public Map<String, List<Map<String, Object>>> getAllSinkMessages(@QueryValue(defaultValue = "20") int count) {
-        return sinkStreamService.readAllSinkMessages(count);
+        return sinkService.readAllSinkMessages(count);
     }
 }

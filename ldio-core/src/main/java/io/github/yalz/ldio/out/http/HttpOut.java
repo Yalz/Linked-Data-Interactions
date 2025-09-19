@@ -21,8 +21,8 @@ public class HttpOut extends EtlOutput {
     @ComponentProperty(key = "endpoint", required = true)
     private String endpoint;
 
-    private final RdfWriter rdfWriter;
-    private final OkHttpClient client;
+    protected RdfWriter rdfWriter;
+    protected OkHttpClient client;
 
     public HttpOut(String pipelineName, EtlComponentConfig config) {
         super(pipelineName, config);

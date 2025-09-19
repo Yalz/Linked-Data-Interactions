@@ -12,6 +12,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { API_BASE } from "../../api.config";
 
 const contentTypes = [
   "text/turtle",
@@ -34,7 +35,7 @@ export const HttpOutput: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get(`/api`)
+      .get(`${API_BASE}`)
       .then((res) => {
         const allPipelines = Object.values(res.data);
         const filtered = allPipelines
@@ -57,7 +58,7 @@ export const HttpOutput: React.FC = () => {
 
     try {
       await axios.post(
-        `/api/pipeline/${selectedPipeline}`,
+        `${API_BASE}/pipeline/${selectedPipeline}`,
         payload,
         {
           headers: {
@@ -81,7 +82,7 @@ export const HttpOutput: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: "80%", mx: "auto", py: 4 }}>
+    <Box sx={{ width: "90%", mx: "auto", py: 4 }}>
       <Typography variant="h4" gutterBottom>
         HTTP Output Sender
       </Typography>

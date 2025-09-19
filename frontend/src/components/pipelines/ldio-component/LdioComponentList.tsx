@@ -12,6 +12,7 @@ import {
   Paper,
 } from "@mui/material";
 import { LdioComponent } from "./LdioComponent";
+import { API_BASE } from "../../../api.config";
 
 export const LdioComponentList: React.FC = () => {
   const [inputs, setInputs] = useState<any[]>([]);
@@ -21,7 +22,7 @@ export const LdioComponentList: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get(`/api/config`)
+      .get(`${API_BASE}/config`)
       .then((response) => {
         setInputs(response.data.inputs);
         setAdapters(response.data.adapters);

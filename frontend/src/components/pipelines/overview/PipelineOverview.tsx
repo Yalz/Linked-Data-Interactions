@@ -9,6 +9,7 @@ import {
   DialogTitle
 } from "@mui/material";
 import axios from "axios";
+import { API_BASE } from "../../../api.config";
 
 type EtlComponentConfig = {
   name: string;
@@ -45,13 +46,13 @@ export const PipelineOverview: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get(`/api`)
+    axios.get(`${API_BASE}`)
       .then((res) => setPipelines(res.data))
       .catch((err) => console.error("Failed to fetch pipelines:", err));
   }, []);
 
   const onDeletePipeline = () => {
-    axios.delete(`/api/${deleteTarget}`)
+    axios.delete(`${API_BASE}/${deleteTarget}`)
       .then(() => {
         setPipelines(prev => {
           const updated = { ...prev };

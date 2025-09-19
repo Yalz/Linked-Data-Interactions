@@ -17,6 +17,7 @@ import {
 import { ComponentGroup } from "./ComponentGroup";
 import { SubmitFeedback } from "./SubmitFeedback";
 import axios from "axios";
+import { API_BASE } from "../../../api.config";
 
 type PipelineConfig = {
   name: string;
@@ -61,7 +62,7 @@ export const Configurer: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get(`/api/config`)
+      .get(`${API_BASE}/config`)
       .then((response) => {
         setAvailableInputs(response.data.inputs);
         setAvailableAdapters(response.data.adapters);
@@ -81,7 +82,7 @@ export const Configurer: React.FC = () => {
       outputs,
     };
 
-    axios.post(`/api`, payload)
+    axios.post(`${API_BASE}`, payload)
       .then(() => {
         setSnackbarMessage(`Pipeline "${pipelineName}" successfully created`);
         setSnackbarSeverity("success");

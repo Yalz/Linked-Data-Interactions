@@ -12,11 +12,16 @@ Whether you're reading, transforming, exporting, or storing Linked Data, LDIO pr
 To get started, simply launch the provided [docker-compose file](./docker-compose.yml).
 This will provide you with both a LDIO instance and a Redis database for storing (meta)data.
 
-Next, browse to your instance (mapped by default to port 8080). From there, follow the guide on the home page.
+```shell
+docker compose up
+```
+
+Next, browse to your instance `http://localhost:8080/` <br>
+From there, follow the guide on the home page.
 
 ### Using docker images
 
-Our application is available at `ghcr.io/yalz/ldio`. For more details on LDIO versioning, visit [the versions page](https://github.com/Yalz/Linked-Data-Interactions/pkgs/container/ldio/versions).
+The image is available at `ghcr.io/yalz/ldio`. For more details on LDIO versioning, visit [the versions page](https://github.com/Yalz/Linked-Data-Interactions/pkgs/container/ldio/versions).
 
 Secondly, a Redis database connection is needed to let LDIO register its pipelines.
 Provide the LDIO image with a valid connection string with the environment variable `REDIS_URI`.

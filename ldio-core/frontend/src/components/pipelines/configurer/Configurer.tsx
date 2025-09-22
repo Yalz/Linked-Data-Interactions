@@ -74,6 +74,8 @@ export const Configurer: React.FC = () => {
   }, []);
 
   const handleSubmit = () => {
+    setValidationErrors([]);
+
     const payload: PipelineConfig = {
       name: pipelineName,
       input: showAdapter ? { ...input, adapter: input.adapter } : input,
@@ -93,22 +95,18 @@ export const Configurer: React.FC = () => {
         try {
           const parsedReport = typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
 
-          console.log(parsedReport)
           if (Array.isArray(parsedReport["Validation failed"])) {
             setValidationErrors(parsedReport["Validation failed"]);
             setSnackbarOpen(false); // Don't show snackbar for validation errors
           } else {
-            console.log(parsedReport)
             setValidationErrors([{ general: "Invalid validation report format" }]);
           }
         } catch (parseError) {
-          console.log(rawReport)
           setValidationErrors([{ general: "Failed to parse validation report" }]);
         }
       });
-
-
   };
+
 
   return (
     <Box sx={{ width: '80%', mx: 'auto' }}>

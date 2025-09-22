@@ -11,7 +11,7 @@ import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-@Controller("/pipeline")
+@Controller("/api/pipeline")
 public class HttpInController {
     private final Map<String, EtlInput> inputs = new HashMap<>();
 

@@ -1,0 +1,11 @@
+micronaut:
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/**"
+        paths: "classpath:static"
+      assets:
+        enabled: true
+        mapping: "/assets/**"
+        paths: "classpath:static/assets"

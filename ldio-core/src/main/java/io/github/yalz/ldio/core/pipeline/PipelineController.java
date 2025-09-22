@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@Controller("/api")
 public class PipelineController {
     private final PipelineManager pipelineManager;
 

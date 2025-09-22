@@ -24,7 +24,7 @@ sourceSets {
     main {
         resources {
             srcDirs = ['src/main/resources']
-//            exclude 'application.yml'
+            includes = ['**/*']
         }
     }
 }
@@ -69,24 +69,14 @@ tasks.test {
     useJUnitPlatform()
 }
 
-var githubOrg = "Yalz"
-
-docker {
-    registryCredentials {
-        url.set("ghcr.io")
-        username.set(githubOrg)
-        password.set(System.getenv("GITHUB_PERSONAL_ACCESS_TOKEN"))
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'io.github.yalz.ldio.Application'
     }
 }
 
-tasks.named("dockerBuild") {
-    images.set(["ghcr.io/${githubOrg}/${rootProject.name}"])
+jar {
+    enabled = false
 }
 
-tasks.named("dockerPush") {
-    images.set(["ghcr.io/${githubOrg}/${rootProject.name}"])
-}
-
-tasks.named("dockerfile") {
-    baseImage.set("eclipse-temurin:24-jre-alpine")
-}
+build.dependsOn shadowJar

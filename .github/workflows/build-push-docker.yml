@@ -7,8 +7,8 @@ on:
 
 
 jobs:
-  backend:
-    name: Build Backend Image
+  build-image:
+    name: Build LDIO Docker Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -24,40 +24,11 @@ jobs:
           distribution: 'temurin'
           java-version: '24'
 
-      - name: Grant execute permission for Gradle
-        run: chmod +x gradlew
-
-      - name: Generate Dockerfile
-        run: ./gradlew dockerfile
-
-      - name: Build backend
-        run: ./gradlew :ldio-core:clean :ldio-core:build :ldio-core:dockerfile
-
       - name: Build Docker image
-        run: docker build -t ghcr.io/yalz/ldio:latest -f ldio-core/build/docker/main/Dockerfile ldio-core/build/docker/main/
+        run: docker build -t ghcr.io/yalz/ldio:latest .
 
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u Yalz --password-stdin
 
       - name: Push Docker image
         run: docker push ghcr.io/yalz/ldio:latest
-
-  frontend:
-    name: Build Frontend Image
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Build Vite frontend Docker image
-        run: docker build -t ghcr.io/yalz/ldio-ui:latest -f frontend/Dockerfile frontend/
-
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u Yalz --password-stdin
-
-      - name: Push Docker image
-        run: docker push ghcr.io/yalz/ldio-ui:latest

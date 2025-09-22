@@ -8,7 +8,7 @@ import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-@Controller("/sink")
+@Controller("/api/sink")
 public class SinkController {
 
     @Inject

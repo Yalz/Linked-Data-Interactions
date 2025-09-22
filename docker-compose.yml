@@ -12,25 +12,14 @@ services:
     networks:
       - ldio-net
 
-  ldio-be:
-    image: ldio-be
+  ldio:
+    image: ldio
     ports:
       - '8080:8080'
     environment:
       - REDIS_URI=redis://default:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@cache:6379
     depends_on:
       - cache
-    networks:
-      - ldio-net
-
-  ldio-fe:
-    image: ldio-fe
-    ports:
-      - '3000:80'
-    environment:
-      - VITE_API_URL=http://ldio-be:8080
-    depends_on:
-      - ldio-be
     networks:
       - ldio-net
 

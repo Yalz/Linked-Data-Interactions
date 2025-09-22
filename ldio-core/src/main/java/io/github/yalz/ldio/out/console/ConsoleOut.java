@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import static io.github.yalz.ldio.core.rdf_writer.RdfWriter.CONTENT_TYPE_DEFAULT;
 import static io.github.yalz.ldio.core.rdf_writer.RdfWriter.CONTENT_TYPE_KEY;
 
-@ComponentName(value = "Ldio:ConsoleOut", type = ComponentName.ComponentType.OUTPUT)
+@ComponentName(value = "Ldio:ConsoleOut", type = ComponentName.ComponentType.OUTPUT,
+        description = "Basic component for debugging a pipeline output by writing it to the console output.")
 public class ConsoleOut extends EtlOutput {
     Logger logger = LoggerFactory.getLogger(ConsoleOut.class);
 

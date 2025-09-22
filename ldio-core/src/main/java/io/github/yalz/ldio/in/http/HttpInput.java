@@ -10,7 +10,8 @@ import jakarta.inject.Inject;
 import static io.github.yalz.ldio.core.pipeline.component.ComponentName.ComponentType.INPUT;
 import static io.github.yalz.ldio.in.http.HttpInEvent.LifecycleEvent.CREATED;
 
-@ComponentName(value = "Ldio:HttpIn", type = INPUT)
+@ComponentName(value = "Ldio:HttpIn", type = INPUT,
+        description = "Basic component for listening to input over HTTP. Endpoint is available at {baseurl}/pipeline/{pipelineName}.")
 public class HttpInput extends EtlInput {
     @Inject
     ApplicationEventPublisher<HttpInEvent> applicationEventPublisher;

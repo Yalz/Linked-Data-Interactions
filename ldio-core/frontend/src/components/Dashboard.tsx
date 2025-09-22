@@ -10,7 +10,7 @@ export const Dashboard = () => {
         </Typography>
 
         <Typography variant="body1" paragraph>
-          LDIO is an application designed to facilitate seamless interactions with Linked Data. <br />
+          The Linked Data Interactions Orchestrator (LDIO) serves as a workbench for any Linked Data tinkerer. <br />
           Whether you're reading, transforming, exporting, or storing Linked Data, LDIO provides a unified platform to manage it all.
         </Typography>
 

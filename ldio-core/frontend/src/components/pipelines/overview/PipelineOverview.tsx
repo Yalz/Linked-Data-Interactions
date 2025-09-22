@@ -80,55 +80,69 @@ export const PipelineOverview: React.FC = () => {
           </TableHead>
 
           <TableBody>
-            {Object.entries(pipelines).map(([key, pipeline]) => (
-              <TableRow key={key}>
-                <TableCell>{pipeline.name}</TableCell>
-
-                <TableCell>
-                  <Typography variant="body2">{pipeline.input.name}</Typography>
-                  {renderConfig(pipeline.input.config)}
-                </TableCell>
-
-                <TableCell>
-                  {pipeline.input.adapter ? (
-                    <>
-                      <Typography variant="body2">{pipeline.input.adapter.name}</Typography>
-                      {renderConfig(pipeline.input.adapter.config)}
-                    </>
-                  ) : "—"}
-                </TableCell>
-
-                <TableCell>
-                  {pipeline.transformers && pipeline.transformers.length > 0 ? (
-                    pipeline.transformers.map((t, idx) => (
-                      <Box key={idx} sx={{ mb: 1 }}>
-                        <Typography variant="body2">{t.name}</Typography>
-                        {renderConfig(t.config)}
-                      </Box>
-                    ))
-                  ) : "—"}
-                </TableCell>
-
-                <TableCell>
-                  {pipeline.outputs.map((o, idx) => (
-                    <Box key={idx} sx={{ mb: 1 }}>
-                      <Typography variant="body2">{o.name}</Typography>
-                      {renderConfig(o.config)}
-                    </Box>
-                  ))}
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                    onClick={() => setDeleteTarget(pipeline.name)}
-                  >
-                    Delete
-                  </Button>
+            {Object.keys(pipelines).length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="h6" gutterBottom>
+                      No active pipelines found
+                    </Typography>
+                    <Typography variant="body2">
+                      Your data highways are still waited to be constructed. Once a pipeline is created, it’ll show up here!
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              Object.entries(pipelines).map(([key, pipeline]) => (
+                <TableRow key={key}>
+                  <TableCell>{pipeline.name}</TableCell>
+
+                  <TableCell>
+                    <Typography variant="body2">{pipeline.input.name}</Typography>
+                    {renderConfig(pipeline.input.config)}
+                  </TableCell>
+
+                  <TableCell>
+                    {pipeline.input.adapter ? (
+                      <>
+                        <Typography variant="body2">{pipeline.input.adapter.name}</Typography>
+                        {renderConfig(pipeline.input.adapter.config)}
+                      </>
+                    ) : "—"}
+                  </TableCell>
+
+                  <TableCell>
+                    {pipeline.transformers && pipeline.transformers.length > 0 ? (
+                      pipeline.transformers.map((t, idx) => (
+                        <Box key={idx} sx={{ mb: 1 }}>
+                          <Typography variant="body2">{t.name}</Typography>
+                          {renderConfig(t.config)}
+                        </Box>
+                      ))
+                    ) : "—"}
+                  </TableCell>
+
+                  <TableCell>
+                    {pipeline.outputs.map((o, idx) => (
+                      <Box key={idx} sx={{ mb: 1 }}>
+                        <Typography variant="body2">{o.name}</Typography>
+                        {renderConfig(o.config)}
+                      </Box>
+                    ))}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => setDeleteTarget(pipeline.name)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )))}
           </TableBody>
         </Table>
       </TableContainer>

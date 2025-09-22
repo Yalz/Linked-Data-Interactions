@@ -20,9 +20,9 @@ function App() {
         <Route path='components'>
           <Route path="catalog" element={<LdioComponentList />} />
         </Route>
-        <Route path='http-debug'>
+        <Route path='debug'>
           <Route path="sink" element={<SinkMonitor />} />
-          <Route path="send" element={<HttpOutput />} />
+          <Route path="http-send" element={<HttpOutput />} />
         </Route>
         
         <Route path="*" element={<div>404 - Not Found</div>} />

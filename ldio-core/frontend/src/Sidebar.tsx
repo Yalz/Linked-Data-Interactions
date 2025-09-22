@@ -20,8 +20,8 @@ import {
     Send as SendIcon,
     SettingsSuggest as SettingsSuggestIcon,
     Http as HttpIcon,
-    Outbox,
-    MoveToInbox
+    MoveToInbox,
+    Handyman
 } from "@mui/icons-material";
 
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -113,21 +113,21 @@ export function Sidebar() {
                 <Accordion expanded={open === 3} onChange={() => handleOpen(3)}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <ListItemIcon>
-                            <HttpIcon />
+                            <Handyman />
                         </ListItemIcon>
-                        <Typography>Http Debug</Typography>
+                        <Typography>Debug Tools</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         <List disablePadding>
-                            <ListItem component={Link} to="http-debug/sink">
+                            <ListItem component={Link} to="debug/sink">
                                 <ListItemIcon>
                                     <MoveToInbox />
                                 </ListItemIcon>
-                                <ListItemText primary="Http Sink" />
+                                <ListItemText primary="Sink" />
                             </ListItem>
-                            <ListItem component={Link} to="http-debug/send">
+                            <ListItem component={Link} to="debug/http-send">
                                 <ListItemIcon>
-                                    <Outbox />
+                                    <HttpIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Http Send" />
                             </ListItem>

@@ -81,7 +81,7 @@ export const HttpOutput: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: "80%", mx: "auto", py: 4 }}>
+    <Box sx={{ width: "90%", mx: "auto", py: 4 }}>
       <Typography variant="h4" gutterBottom>
         HTTP Output Sender
       </Typography>

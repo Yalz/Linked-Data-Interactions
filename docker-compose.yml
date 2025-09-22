@@ -13,7 +13,7 @@ services:
       - ldio-net
 
   ldio:
-    image: ldio
+    image: ghcr.io/yalz/ldio:latest
     ports:
       - '8080:8080'
     environment:

@@ -14,7 +14,8 @@ import org.apache.jena.riot.Lang;
 import static io.github.yalz.ldio.core.rdf_writer.RdfWriter.CONTENT_TYPE_DEFAULT;
 import static io.github.yalz.ldio.core.rdf_writer.RdfWriter.CONTENT_TYPE_KEY;
 
-@ComponentName(value = "Ldio:SinkOut", type = ComponentName.ComponentType.OUTPUT)
+@ComponentName(value = "Ldio:SinkOut", type = ComponentName.ComponentType.OUTPUT,
+        description = "Debugging component that allows the user to send the pipeline output to the database.")
 public class SinkOut extends EtlOutput {
     @Inject
     private SinkService sinkService;

@@ -13,7 +13,6 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt'; // Fun icon
 
 type SinkMessage = {
   id: string;

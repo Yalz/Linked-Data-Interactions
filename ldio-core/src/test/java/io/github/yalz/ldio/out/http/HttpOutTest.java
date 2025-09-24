@@ -5,8 +5,8 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,18 +29,18 @@ class HttpOutTest {
     @Mock
     private Response mockResponse;
     private HttpOut httpOut;
-    private Model filledModel;
+    private Dataset filledModel;
 
     @BeforeEach
     void setUp() {
         mockClient = mock(OkHttpClient.class);
         mockCall = mock(Call.class);
 
-        filledModel = RDFParser.fromString("_:b0 <http://schema.org/name> \"Jane Doe\" .", Lang.NQ).toModel();
+        filledModel = RDFParser.fromString("_:b0 <http://schema.org/name> \"Jane Doe\" .", Lang.NQ).toDataset();
 
         String endpoint = "http://example.com/endpoint";
         EtlComponentConfig componentConfig = new EtlComponentConfig("Ldio:HttpOut", Map.of("endpoint", endpoint,
-                "rdf-writer.format", "text/turtle"));
+                "rdf-writer.format", "application/trig"));
 
         // Manually create the HttpOut instance
         httpOut = new HttpOut("testPipeline", componentConfig);
@@ -61,7 +61,7 @@ class HttpOutTest {
 
     @Test
     void testHandle_WithEmptyModel_DoesNotSendRequest() throws Exception {
-        Model emptyModel = ModelFactory.createDefaultModel();
+        Dataset emptyModel = DatasetFactory.create();
 
         httpOut.handle(emptyModel);
 

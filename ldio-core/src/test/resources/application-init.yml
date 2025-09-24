@@ -16,4 +16,4 @@ orchestrator:
       outputs:
         - name: Test:Out
           config:
-            content-type: text/turtle
+            content-type: application/trig

@@ -19,7 +19,7 @@ public class HttpInController {
     @Post("/{pipelineId}")
     public HttpResponse<String> submit(@PathVariable String pipelineId, @Body String data, HttpRequest<?> request) {
         if (inputs.containsKey(pipelineId)) {
-            inputs.get(pipelineId).submit(new EtlInput.Content(request.getContentType().orElse(MediaType.of("text/turtle")).getName(), data));
+            inputs.get(pipelineId).submit(new EtlInput.Content(request.getContentType().orElse(MediaType.of("application/trig")).getName(), data));
             return HttpResponse.ok("Submitted");
         }
         return HttpResponse.ok("No pipeline by that name");

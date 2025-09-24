@@ -8,7 +8,7 @@ import io.github.yalz.ldio.core.rdf_writer.RdfWriter;
 import io.github.yalz.ldio.core.sink.SinkService;
 import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Inject;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.Lang;
 
 import static io.github.yalz.ldio.core.rdf_writer.RdfWriter.CONTENT_TYPE_DEFAULT;
@@ -33,7 +33,7 @@ public class SinkOut extends EtlOutput {
     }
 
     @Override
-    public void handle(Model data) {
+    public void handle(Dataset data) {
         sinkService.writeToSink(pipelineName, rdfWriter.writeToOutputFormat(data));
     }
 }

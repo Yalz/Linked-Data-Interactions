@@ -5,7 +5,7 @@ import io.github.yalz.ldio.core.pipeline.component.ComponentProperty;
 import io.github.yalz.ldio.core.pipeline.component.output.EtlOutput;
 import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
 import io.github.yalz.ldio.core.rdf_writer.RdfWriter;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class ConsoleOut extends EtlOutput {
     }
 
     @Override
-    public void handle(Model data) {
+    public void handle(Dataset data) {
         logger.info("pipeline {}: {}", pipelineName, rdfWriter.writeToOutputFormat(data));
     }
 }

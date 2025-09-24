@@ -1,13 +1,12 @@
 package io.github.yalz.ldio.core.pipeline;
 
-import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
 import io.github.yalz.ldio.core.OrchestratorConfig;
+import io.github.yalz.ldio.core.pipeline.config.EtlComponentConfig;
 import io.github.yalz.ldio.core.pipeline.config.InputConfig;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.test.support.TestPropertyProvider;
-import org.junit.jupiter.api.Test;
-
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -49,7 +48,7 @@ class PipelineInitTest implements TestPropertyProvider {
                 new EtlComponentConfig("Test:Adapt", Map.of("mapping", "mapping.ttl")));
 
         var expectedTransform = new EtlComponentConfig("Test:Transform", Map.of("bool", "true"));
-        var expectedOutput = new EtlComponentConfig("Test:Out", Map.of("content-type", "text/turtle"));
+        var expectedOutput = new EtlComponentConfig("Test:Out", Map.of("content-type", "application/trig"));
 
         assertEquals(expectedInput, pipeline.getInput());
 

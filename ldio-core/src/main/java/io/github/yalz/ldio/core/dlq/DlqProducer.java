@@ -4,7 +4,7 @@ import io.github.yalz.ldio.core.pipeline.component.input.EtlInput;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Singleton;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriter;
 import org.slf4j.Logger;
@@ -34,11 +34,11 @@ public class DlqProducer {
         logger.error("Pipeline [{}]: Could not adapt item. Sent to DLQ {}", pipeline, DLQ_ADAPT_STREAM_NAME);
     }
 
-    public void sendToDlq(String pipeline, String step, Model data, Exception e) {
+    public void sendToDlq(String pipeline, String step, Dataset data, Exception e) {
         Map<String, String> message = Map.of(
                 "pipeline", pipeline,
                 "step", step,
-                "data", RDFWriter.source(data).format(RDFFormat.TTL).asString(),
+                "data", RDFWriter.source(data).format(RDFFormat.TRIG).asString(),
                 "exception", e.toString()
         );
         syncCommands.xadd(DLQ_TRANSFORM_STREAM_NAME, message);

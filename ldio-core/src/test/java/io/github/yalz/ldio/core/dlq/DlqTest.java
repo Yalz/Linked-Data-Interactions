@@ -3,7 +3,6 @@ package io.github.yalz.ldio.core.dlq;
 import io.github.yalz.ldio.core.pipeline.PipelineManager;
 import io.github.yalz.ldio.core.pipeline.component.input.EtlInput;
 import io.github.yalz.ldio.core.pipeline.test_components.BreakingTransformer;
-import io.github.yalz.ldio.core.pipeline.test_components.BreakingAdapter;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.StreamMessage;
 import io.lettuce.core.XReadArgs;
@@ -11,7 +10,7 @@ import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.test.support.TestPropertyProvider;
 import jakarta.inject.Inject;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.query.DatasetFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -86,7 +85,7 @@ public class DlqTest implements TestPropertyProvider {
         syncCommands.del(DLQ_TRANSFORM_STREAM_NAME);
 
         var pipeline = pipelineManager.getPipelines().get("brokenTransform");
-        pipeline.getInput().submit(ModelFactory.createDefaultModel());
+        pipeline.getInput().submit(DatasetFactory.create());
 
         await().until(() -> !syncCommands.xread(XReadArgs.StreamOffset.from(DLQ_TRANSFORM_STREAM_NAME, "0")).isEmpty());
 

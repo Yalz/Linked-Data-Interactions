@@ -9,13 +9,13 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.Lang;
 
 @ComponentName(value = "Ldio:HttpOut", type = ComponentName.ComponentType.OUTPUT,
         description = "Basic component for exporting pipeline output over HTTP")
 public class HttpOut extends EtlOutput {
-    @ComponentProperty(key = "rdf-writer.format", defaultValue = "text/turtle", expectedType = Lang.class)
+    @ComponentProperty(key = "rdf-writer.format", defaultValue = "application/trig", expectedType = Lang.class)
     private Lang outputFormat;
 
     @ComponentProperty(key = "endpoint", required = true)
@@ -31,9 +31,9 @@ public class HttpOut extends EtlOutput {
     }
 
     @Override
-    public void handle(Model model) throws Exception {
-        if (!model.isEmpty()) {
-            var outputString = rdfWriter.writeToOutputFormat(model);
+    public void handle(Dataset dataset) throws Exception {
+        if (!dataset.isEmpty()) {
+            var outputString = rdfWriter.writeToOutputFormat(dataset);
 
             RequestBody body = RequestBody.create(
                     outputString, MediaType.get(outputFormat.getHeaderString()));

@@ -9,7 +9,7 @@ import io.github.yalz.ldio.core.pipeline.config.InputConfig;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.pubsub.api.reactive.RedisPubSubReactiveCommands;
 import jakarta.inject.Inject;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParserBuilder;
 import org.apache.jena.riot.RDFWriter;
@@ -44,19 +44,19 @@ public abstract class EtlInput extends EtlComponent {
 
     public void submit(Content data) {
         try {
-            Model model = adapter.adapt(data);
+            Dataset model = adapter.adapt(data);
             submit(model);
         } catch (Exception e) {
             dlqProducer.sentNonAdaptableInput(pipelineName, data, e);
         }
     }
 
-    public void submit(Model model) {
+    public void submit(Dataset model) {
         String nq = serialize(model);
         pubSub.publish(channelName, nq).subscribe();
     }
 
-    public Flux<Model> getStream() {
+    public Flux<Dataset> getStream() {
         return pubSub.observeChannels()
                 .filter(msg -> msg.getChannel().equals(channelName))
                 .map(msg -> deserialize(msg.getMessage()));
@@ -66,12 +66,12 @@ public abstract class EtlInput extends EtlComponent {
         return adapter;
     }
 
-    private String serialize(Model model) {
+    private String serialize(Dataset model) {
         return RDFWriter.source(model).lang(Lang.NQ).asString();
     }
 
-    private Model deserialize(String nq) {
-        return RDFParserBuilder.create().fromString(nq).lang(Lang.NQ).toModel();
+    private Dataset deserialize(String nq) {
+        return RDFParserBuilder.create().fromString(nq).lang(Lang.NQ).toDataset();
     }
 
     public record Content(String contentType, String data) {

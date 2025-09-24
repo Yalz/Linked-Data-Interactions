@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 const contentTypes = [
-  "text/turtle",
+  "application/trig",
   "application/n-quads",
   "application/ld+json",
   "application/json",

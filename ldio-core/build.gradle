@@ -56,6 +56,7 @@ dependencies {
     implementation 'org.reflections:reflections:0.10.2'
 
     implementation("org.apache.jena:jena-arq:5.5.0")
+    implementation("org.apache.jena:jena-geosparql:5.5.0")
 
     implementation("io.projectreactor:reactor-core")
 
